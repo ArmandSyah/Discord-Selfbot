@@ -12,7 +12,6 @@ from cogs.utils.checks import *
 
 
 class Mal:
-
     def __init__(self, bot):
         self.bot = bot
 
@@ -25,9 +24,11 @@ class Mal:
         Ex: >mal anime [link] Steins;Gate"""
         if ctx.invoked_subcommand is None:
             await self.bot.send_message(ctx.message.channel,
-                                       bot_prefix + 'Invalid Syntax. Example use: ``>mal anime steins;gate`` or ``>mal manga boku no hero academia``')
+                                        bot_prefix + 'Invalid Syntax. Example use: ``>mal anime steins;gate`` or ``>mal manga boku no hero '
+                                                     'academia``')
 
-    # Anime search for Mal
+            # Anime search for Mal
+
     @mal.command(pass_context=True)
     async def anime(self, ctx, *, msg: str):
         """Search the anime database. Ex: >mal anime Steins;Gate"""
@@ -42,7 +43,8 @@ class Mal:
                     msg = msg[6:]
                     link = True
                 # Search google for the anime under site:myanimelist.net
-                searchUrl = "https://www.googleapis.com/customsearch/v1?q=site:myanimelist.net anime " + msg.strip() + "&start=" + '1' + "&key=" + \
+                searchUrl = "https://www.googleapis.com/customsearch/v1?q=site:myanimelist.net anime " + \
+                            msg.strip() + "&start=" + '1' + "&key=" + \
                             config['google_api_key'] + "&cx=" + config[
                                 'custom_search_engine']
                 r = requests.get(searchUrl)
@@ -50,20 +52,20 @@ class Mal:
                 result = json.loads(response)
                 animeID = re.findall('/anime/(.*)/', str(result['items'][0]['link']))
                 results = await loop.run_in_executor(None, spice.search_id, int(animeID[0]), spice.get_medium('anime'),
-                                       spice.init_auth(config['mal_username'], config['mal_password']))
+                                                     spice.init_auth(config['mal_username'], config['mal_password']))
                 gc.collect()
 
                 # If no results found or daily api limit exceeded, use spice's search
                 if not results:
                     allresults = await loop.run_in_executor(None, spice.search, msg.strip(), spice.get_medium('anime'),
-                                           spice.init_auth(config['mal_username'], config['mal_password']))
+                                                            spice.init_auth(config['mal_username'], config['mal_password']))
                     gc.collect()
                     results = allresults[0]
 
             # On any exception, search spice instead
             except:
                 allresults = await loop.run_in_executor(None, spice.search, msg.strip(), spice.get_medium('anime'),
-                                       spice.init_auth(config['mal_username'], config['mal_password']))
+                                                        spice.init_auth(config['mal_username'], config['mal_password']))
                 gc.collect()
                 results = allresults[0]
 
@@ -104,7 +106,7 @@ class Mal:
             try:
                 synop = synopsis.get_text()[:400].split('.')
                 text = ''
-                for i in range(0, len(synop)-1):
+                for i in range(0, len(synop) - 1):
                     text += synop[i] + '.'
             except:
                 text = synopsis.get_text()
@@ -151,20 +153,21 @@ class Mal:
                 response = r.content.decode('utf-8')
                 result = json.loads(response)
                 mangaID = re.findall('/manga/(.*)/', str(result['items'][0]['link']))
-                results = await loop.run_in_executor(None, spice.search_id, int(mangaID[0]), spice.get_medium('manga'), spice.init_auth(config['mal_username'], config['mal_password']))
+                results = await loop.run_in_executor(None, spice.search_id, int(mangaID[0]), spice.get_medium('manga'),
+                                                     spice.init_auth(config['mal_username'], config['mal_password']))
                 gc.collect()
 
                 # If no results found or daily api limit exceeded, use spice's search
                 if not results:
                     allresults = await loop.run_in_executor(None, spice.search, msg.strip(), spice.get_medium('manga'),
-                                           spice.init_auth(config['mal_username'], config['mal_password']))
+                                                            spice.init_auth(config['mal_username'], config['mal_password']))
                     gc.collect()
                     results = allresults[0]
 
             # On any exception, search spice instead
             except:
                 allresults = await loop.run_in_executor(None, spice.search, msg.strip(), spice.get_medium('manga'),
-                                       spice.init_auth(config['mal_username'], config['mal_password']))
+                                                        spice.init_auth(config['mal_username'], config['mal_password']))
                 gc.collect()
                 results = allresults[0]
 
@@ -227,6 +230,34 @@ class Mal:
         except:
             await self.bot.send_message(ctx.message.channel, bot_prefix + 'No results')
             await self.bot.delete_message(fetch)
+
+    @mal.command(pass_context=True)
+    async def add_anime_entry(self, ctx, *, msg: str):
+        pass
+
+    @mal.command(pass_context=True)
+    async def add_manga_entry(self, ctx, *, msg: str):
+        pass
+
+    @mal.command(pass_context=True)
+    async def update_manga_list(self, ctx, *, msg: str):
+        pass
+
+    @mal.command(pass_context=True)
+    async def update_anime_list(self, ctx, *, msg: str):
+        pass
+
+    @mal.command(pass_context=True)
+    async def update_manga_list(self, ctx, *, msg: str):
+        pass
+
+    @mal.command(pass_context=True)
+    async def delete_anime_entry(self, ctx, *, msg: str):
+        pass
+
+    @mal.command(pass_context=True)
+    async def delete_manga_entry(self, ctx, *, msg: str):
+        pass
 
 
 def setup(bot):
